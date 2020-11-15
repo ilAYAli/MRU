@@ -11,7 +11,9 @@ Per _git repo_ database. Common database for all other files.
     put the following in ~/.profile, ~/.zshrc or similar:
     eval "$(luarocks --lua-version=5.1 path)"
 
-* https://github.com/junegunn/fzf.vim (for vim integration)
+optional:
+* https://github.com/junegunn/fzf.vim
+
 
 ### Configuration
 to use fzf, specify:
