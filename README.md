@@ -1,6 +1,7 @@
 # MRU
 
 MRU, most recently used files.
+
 Separate databases for each git repo and non-tracked files.
 
 ### Installation
