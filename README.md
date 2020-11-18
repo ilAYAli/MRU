@@ -1,7 +1,7 @@
 # MRU
 
-MRU, most recently used files
-Per _git repo_ database. Common database for all other files.
+MRU, most recently used files.
+Separate databases for each git repo and non-tracked files.
 
 ### Installation
     luarocks --local --lua-version=5.1 install md5
