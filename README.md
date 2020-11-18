@@ -17,8 +17,11 @@ optional:
 
 
 ### Configuration
-to use fzf, specify:
-let g:mru_msu_fzf = 1
+To utilize fzf, specify the following in ~/.config/nvim/init.vim
+    let g:mru_use_fzf = 1
+
+Or set the following in "init.lua":
+    lua vim.g.mru_use_fzf = 1
 
 ### Neo/Vim options
     MRU                             print MRU
