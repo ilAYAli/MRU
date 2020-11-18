@@ -9,7 +9,7 @@ Separate databases for each git repo and non-tracked files.
     luarocks --local --lua-version=5.1 install lunajson
     luarocks --local --lua-version=5.1 install argparse
 
-    put the following in ~/.profile, ~/.zshrc or similar:
+    to get luarocks to work, ensure that the following is executed before launching neovim, by e.g putting the following in ~/.profile, ~/.zshrc or similar:
     eval "$(luarocks --lua-version=5.1 path)"
 
 optional:
