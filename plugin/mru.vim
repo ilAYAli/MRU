@@ -1,16 +1,13 @@
 if exists('g:mru_loaded')
     finish
 endif
-
 let g:mru_loaded = 1
 
-" let g:mru_use_fzf = get(g:, 'mru_use_fz', 0)
+" define default command- and autocommands
+let g:mru_disable_default_commands = get(g:, 'mru_disable_default_commands', 0)
 
-" race?
-let g:mru_use_fzf = 0
-if g:loaded_fzf
-    let g:mru_use_fzf = 1
-endif
+" don't use fzf by default:
+let g:mru_use_fzf = get(g:, 'mru_use_fzf', 0)
 
 
 lua require'mru'
@@ -55,68 +52,80 @@ function! s:mru_buflist(...) abort
     return l:mru_list
 endfunction
 
-function! s:mru_add()
+function! s:mru_add() abort
     lua mru_main({"--add", vim.fn.expand('%:p')})
 endfunction
 
-augroup mru_autocmd
-    autocmd!
-    " automatically update MRU when switching buffer:
-    autocmd BufEnter * silent! call <SID>mru_add() | mode
-    "autocmd BufEnter * call <SID>mru_add() | mode
-augroup END
 
 "---[ FZF ]-----------------------------------------------
-if g:mru_use_fzf == 1
-    function! s:fzf_edit_path(item)
-        execute 'e' a:item
-    endfunction
+function! s:fzf_edit_path(item)
+    execute 'e' a:item
+endfunction
 
+function! s:open_fzf_mru(...) abort
     let $FZF_DEFAULT_OPTS = ""
-    function! s:open_fzf_mru(...)
-        let l:fzf_files_options = '--ansi --border --prompt "MRU> "'
-        let l:source = <SID>mru_buflist(a:000)
-        if len(l:source) == 0
-            return
-        endif
 
-        "\ 'down':    len(l:source) + 2
-        call fzf#run({
-        \ 'source':  l:source,
-        \ 'sink':    function('s:fzf_edit_path'),
-        \ 'options': '-m ' . l:fzf_files_options,
-        \ 'down':    len(l:source) + 4
-        \ })
-    endfunction
+    let l:fzf_files_options = '--ansi --border --prompt "MRU> "'
+    let l:source = <SID>mru_buflist(a:000)
+    if len(l:source) == 0
+        return
+    endif
 
-    command! -nargs=? MRU call <SID>open_fzf_mru(<f-args>)
-else
+    "\ 'down':    len(l:source) + 2
+    call fzf#run({
+    \ 'source':  l:source,
+    \ 'sink':    function('s:fzf_edit_path'),
+    \ 'options': '-m ' . l:fzf_files_options,
+    \ 'down':    len(l:source) + 4
+    \ })
+endfunction
+
 "---[ location list ]-------------------------------------
-    function! s:update_ll(...)
-        let l:source = <SID>mru_buflist(a:000)
-        if len(l:source) == 0
-            return
-        endif
+function! s:update_ll(...) abort
+    let l:source = <SID>mru_buflist(a:000)
+    if len(l:source) == 0
+        return
+    endif
 
-        silent! call setloclist(0, map(l:source, 
-                    \ {_, p -> {'filename': p}}))
-    endfunction
+    silent! call setloclist(0, map(l:source, 
+                \ {_, p -> {'filename': p}}))
+endfunction
 
-    function! s:open_ll_mru(...)
-        silent! call <SID>update_ll()
-        silent! lopen
-    endfunction
+function! s:open_ll_mru(...) abort
+    silent! call <SID>update_ll()
+    silent! lopen
+endfunction
 
-    function! s:close_ll_mru()
-        silent! call <SID>update_ll()
-        silent! lclose
-    endfunction
+function! s:close_ll_mru() abort
+    silent! call <SID>update_ll()
+    silent! lclose
+endfunction
 
-    augroup mru_ll_au
+"---------------------------------------------------------
+function! MRU_open(...) abort
+    echo "args:L " a:000
+    if g:mru_use_fzf == 1
+        call call("<SID>open_fzf_mru", a:000)
+    else
+        call call("<SID>open_ll_mru", a:000)
+    endif
+endfunction
+
+function! MRU_close(...) abort
+    if g:mru_use_fzf == 0
+        call <SID>close_ll_mru(a:000)
+    endif
+endfunction
+
+if ! g:mru_disable_default_commands
+    command! -nargs=? MRU call MRU_open(<f-args>)
+    
+    augroup mru_autocmd
+        autocmd!
+        autocmd BufEnter * silent! call <SID>mru_add() | mode
+    
         autocmd FileType qf nnoremap <silent><buffer> <CR>
-                    \ <CR> :silent! call <SID>close_ll_mru()<CR>
+                    \ <CR> :silent! call MRU_close()<CR>
     augroup END
-
-    command! -nargs=? MRU call <SID>open_ll_mru(<f-args>)
-endif
+end
 

@@ -14,15 +14,10 @@ optional:
 * https://github.com/junegunn/fzf.vim
 
 
-### Configuration
-To utilize fzf, specify the following in ~/.config/nvim/init.vim
-    let g:mru_use_fzf = 1
+### Configuration:
+Use FZF:
+    vim.g.mru_use_fzf = 1
 
-Or set the following in "init.lua":
-    lua vim.g.mru_use_fzf = 1
-
-### Neo/Vim options
-    MRU                             print MRU
-    MRU --add /path/to/file         delete entry from MRU
-    MRU --del /path/to/file         add entry to MRU
+To disable default command- and autocommands:
+    vim.g.mru_disable_default_commands = 1
 
