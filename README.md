@@ -16,8 +16,10 @@ optional:
 
 ### Configuration:
 Use FZF:
-    vim.g.mru_use_fzf = 1
+
+    vim.g.mru_use_fzf = true
 
 To disable default command- and autocommands:
-    vim.g.mru_disable_default_commands = 1
+
+    vim.g.mru_disable_default_commands = true
 
